@@ -8,6 +8,9 @@
     "caminio-auth": "~0.0.1",
     "grunt": "~0.4.2"
   },
+  "scripts": {
+    "start": "node index.js"
+  },
   "main": "index.js",
   "license": "MIT"
 }
