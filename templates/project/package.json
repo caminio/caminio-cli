@@ -1,0 +1,13 @@
+{
+  "name": "APPNAME",
+  "description": "No description for APPNAME yet",
+  "version": "0.0.1",
+  "private": true,
+  "dependencies": {
+    "caminio": "~1.99.1",
+    "caminio-auth": "~0.0.1",
+    "grunt": "~0.4.2"
+  },
+  "main": "index.js",
+  "license": "GPLv3"
+}
