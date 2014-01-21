@@ -1,0 +1,12 @@
+
+0.0.3
+  - fixes GEAR_OPTS replacement when creating gears
+
+0.0.2
+  - gears generator
+  - model generator
+  - controller generator
+  - modularized code
+
+0.0.1
+  - generates new project scaffold

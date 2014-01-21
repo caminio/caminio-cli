@@ -9,5 +9,5 @@
     "grunt": "~0.4.2"
   },
   "main": "index.js",
-  "license": "GPLv3"
+  "license": "MIT"
 }
