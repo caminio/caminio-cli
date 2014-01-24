@@ -6,6 +6,7 @@
   "dependencies": {
     "caminio": "~1.99.1",
     "caminio-auth": "~0.0.1",
+    "caminio-ui": "~0.0.1",
     "grunt": "~0.4.2"
   },
   "scripts": {
