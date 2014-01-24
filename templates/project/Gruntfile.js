@@ -5,12 +5,14 @@ module.exports = function(grunt) {
 
   var pkgFile = grunt.file.readJSON('package.json')
     , regGears = []
-    , watchFiles = [];
+    , watchFiles = []
+    , watchDirs = ['api/'];
 
   // fetch any asset directories from
   // included gears in the package.json file
   Object.keys(pkgFile.dependencies).forEach( function(depName){
     if( depName.match(/^caminio-/) ){
+      watchDirs.push('node_modules/'+depName+'/api');
       regGears.push( depName );
       if( fs.existsSync( 'node_modules/'+depName+'/assets/stylesheets' ) )
         watchFiles.push( 'node_modules/'+depName+'/assets/stylesheets/**/*.less' );
@@ -109,7 +111,7 @@ module.exports = function(grunt) {
       dev: {
         script: 'index.js',
         options: {
-          watch: ['api/','node_modules/caminio-auth/api','node_modules/caminio-ui/api'],
+          watch: watchDirs,
           nodeArgs: [ '--debug' ],
           env: {
             PORT: '4000'
