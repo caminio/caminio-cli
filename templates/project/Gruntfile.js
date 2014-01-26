@@ -13,6 +13,7 @@ module.exports = function(grunt) {
   Object.keys(pkgFile.dependencies).forEach( function(depName){
     if( depName.match(/^caminio-/) ){
       watchDirs.push('node_modules/'+depName+'/api');
+      watchDirs.push('node_modules/'+depName+'/config');
       regGears.push( depName );
       if( fs.existsSync( 'node_modules/'+depName+'/assets/stylesheets' ) )
         watchFiles.push( 'node_modules/'+depName+'/assets/stylesheets/**/*.less' );
