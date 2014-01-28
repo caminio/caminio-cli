@@ -8,7 +8,7 @@ module.exports = function( caminio ){
 
     // respond with html page
     if (req.accepts('html')) {
-      res.render( __dirname+'/../../api/views/404.html.hbs', { url: req.url });
+      res.render( __dirname+'/../../api/views/404.html.jade', { url: req.url });
       return;
     }
 
@@ -21,6 +21,6 @@ module.exports = function( caminio ){
     // default to plain-text. send()
     res.type('txt').send('Not found');
 
-  }
+  };
 
-}
+};

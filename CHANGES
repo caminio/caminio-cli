@@ -1,4 +1,7 @@
-
+0.0.4
+  - adaption to latest Gruntfile.js (build public dirs in different caminio- gears)
+  - fixes .hbs -> .jade
+  
 0.0.3
   - fixes GEAR_OPTS replacement when creating gears
 
