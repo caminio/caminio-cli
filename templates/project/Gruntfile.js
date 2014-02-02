@@ -75,12 +75,23 @@ module.exports = function(grunt) {
             dest: 'public/javascripts/'
           }
         ]
+      },
+      gearBuildDir: {
+        files: [
+          {
+            expand: true,
+            cwd: 'log',
+            src: ['**/*'],
+            dest: 'public'
+          }
+        ]
       }
     },
 
     gears: {
       jshint: 1,
-      build: 1
+      build: 1,
+      copy: 1
     }
 
   });
@@ -88,10 +99,21 @@ module.exports = function(grunt) {
   grunt.registerMultiTask('gears', 'itereate through node_modules/caminio-* gears and perform task', function(){
 
     var task = this;
+
     regGears.forEach( function( mod ){
 
       if( !grunt.file.exists( join('node_modules',mod,'assets') ) )
         return;
+
+      if( task.target === 'copy' ){
+        grunt.config('copy.gearBuildDir.files', [{
+          expand: true,
+          cwd: join('node_modules/',mod,'/build/'),
+          src: ['**/*'],
+          dest: 'public'
+        }]);
+        return grunt.task.run('copy:gearBuildDir');
+      }
 
       var done = task.async();
       grunt.util.spawn({
@@ -123,7 +145,7 @@ module.exports = function(grunt) {
   grunt.loadNpmTasks('grunt-contrib-copy');
   grunt.loadNpmTasks('grunt-contrib-clean');
 
-  grunt.registerTask('build', ['clean','copy:staticJS','gears:build']);
+  grunt.registerTask('build', ['clean','copy:staticJS','gears:build','gears:copy']);
   
   grunt.registerTask('default', ['server']);
 

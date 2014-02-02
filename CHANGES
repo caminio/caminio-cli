@@ -1,6 +1,8 @@
 0.0.4
   - adaption to latest Gruntfile.js (build public dirs in different caminio- gears)
   - fixes .hbs -> .jade
+  - Gruntfile.js builds project's public folder from all caminio-<gear> modules referenced in the project
+    and replaces MODNAME with app name
   
 0.0.3
   - fixes GEAR_OPTS replacement when creating gears

@@ -1,4 +1,5 @@
-var _ = require('lodash');
+var _         = require('lodash');
+var async     = require('async');
 
 // the whole setup is inspired by:
 // https://github.com/RainerAtSpirit/HTMLStarterKitPro/blob/master/Gruntfile.js
@@ -8,7 +9,7 @@ module.exports = function(grunt) {
   /*jshint scripturl:true*/
 
   var requireConfig = {
-    baseUrl: 'assets/javascripts/caminio-ui/app/',
+    baseUrl: 'assets/javascripts/MODNAME/app/',
     paths: {
       'jquery': '../components/jquery/jquery.min',
       'knockout': '../components/knockout.js/knockout-2.3.0.debug',
@@ -21,9 +22,10 @@ module.exports = function(grunt) {
       'inflection': '../components/inflection/lib/inflection',
       //'select2': '../components/select2/select2',
       'moment': '../components/moment/moment',
-      'caminio': '../common/caminio',
-      'ds': '../common/ds',
+      'caminio': '../../caminio',
+      'ds': '../../caminio-ds',
       'models': 'models',
+      'adapters': 'adapters',
       'almond': '../components/durandal-almond/almond'
     }
   };
@@ -34,7 +36,7 @@ module.exports = function(grunt) {
     pkg: grunt.file.readJSON('package.json'),
 
     clean: {
-      build: ['public']
+      build: ['build']
     },
 
     cssmin: {
@@ -45,24 +47,24 @@ module.exports = function(grunt) {
       },
       combine: {
         files: {
-          'public/stylesheets/caminio-ui.min.css': [ 'assets/stylesheets/caminio-ui-static/*.css', 
-                                                      'assets/stylesheets/caminio-ui/*.css' ]
+          'build/stylesheets/MODNAME.min.css': [ 'assets/stylesheets/MODNAME-static/*.css', 
+                                                  'assets/stylesheets/MODNAME/*.css' ]
         }
       }
     },
     
     durandal: {
       main: {
-        src: [ 'assets/javascripts/caminio-ui/app/**/*.*', 
-               'assets/javascripts/caminio-ui/components/durandal/**/*.js' ],
+        src: [ 'assets/javascripts/MODNAME/app/**/*.*', 
+               'assets/javascripts/MODNAME/components/durandal/**/*.js' ],
         options: {
           name: '../components/durandal-almond/almond',
           baseUrl: requireConfig.baseUrl,
-          mainPath: 'assets/javascripts/caminio-ui/app/main',
+          mainPath: 'assets/javascripts/MODNAME/app/main',
           paths: requireConfig.paths,
           exclude: [],
           optimize: 'none',
-          out: 'public/javascripts/caminio-ui/app/main.js'
+          out: 'build/javascripts/MODNAME/app/main.js'
         }
       }
     },
@@ -76,8 +78,8 @@ module.exports = function(grunt) {
             '*/\n'
       },
       build: {
-        src: 'public/javascripts/caminio-ui/app/main.js',
-        dest: 'public/javascripts/caminio-ui/app/main.min.js'
+        src: 'build/javascripts/MODNAME/app/main.js',
+        dest: 'build/javascripts/MODNAME/app/main.min.js'
       }
     },
 
@@ -88,7 +90,7 @@ module.exports = function(grunt) {
             expand: true,
             cwd: 'assets/images',
             src: ['**/*'], 
-            dest: 'public/images/'
+            dest: 'build/images/'
           }
         ]
       },
@@ -98,7 +100,7 @@ module.exports = function(grunt) {
             expand: true,
             cwd: 'assets/fonts/',
             src: ['**/*'], 
-            dest: 'public/fonts/'
+            dest: 'build/fonts/'
           }
         ]
       }
@@ -109,7 +111,7 @@ module.exports = function(grunt) {
     },
 
     jshint: {
-      all: ['Gruntfile.js', 'api/**/*.js', 'config/**/*.js', 'assets/javascripts/caminio-ui/app'],
+      all: ['Gruntfile.js', 'api/**/*.js', 'config/**/*.js', 'assets/javascripts/MODNAME/app'],
       options: {
         "laxcomma": true
       }
@@ -157,7 +159,15 @@ module.exports = function(grunt) {
       }
     });
 
-    caminio.on('ready', done );
+    // clean up database;
+    caminio.on('ready', function(){
+      async.each( Object.keys(caminio.models), function(modelName, next){
+        caminio.models[modelName].remove({}, function(err){
+          if( err ) console.log(err);
+          next();
+        });
+      }, done );
+    });
 
   });
 
