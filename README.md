@@ -2,7 +2,7 @@
 
 Command line interface for caminio. Helps scaffolding projects, gears, controllers, models and such stuff.
 
-> Create a [caminio][https://github.com/tastenwerk/caminio] project scaffold
+> Create a [caminio](https://github.com/caminio/caminio) project scaffold
 
 ## Installation
 
