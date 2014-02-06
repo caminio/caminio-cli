@@ -4,7 +4,7 @@
   "version": "0.0.1",
   "private": true,
   "dependencies": {
-    "caminio": "~1.99.1",
+    "caminio": "~1.1.0",
     "caminio-auth": "~0.0.1",
     "grunt": "~0.4.2"
   },
