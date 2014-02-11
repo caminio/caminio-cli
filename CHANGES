@@ -1,3 +1,7 @@
+0.0.5
+  - changed package.json dependencies to github sources, as we are changing things too fast
+    for pushing so many new versions
+
 0.0.4
   - adaption to latest Gruntfile.js (build public dirs in different caminio- gears)
   - fixes .hbs -> .jade

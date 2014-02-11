@@ -4,9 +4,13 @@
   "version": "0.0.1",
   "private": true,
   "dependencies": {
-    "caminio": "~1.99.1",
-    "caminio-auth": "~0.0.1",
+    "caminio": "~1.1.0",
+    "caminio-auth": "git://github.com/caminio/caminio-auth#master",
+    "caminio-ui": "git://github.com/caminio/caminio-ui#master",
     "grunt": "~0.4.2"
+  },
+  "devDependencies": {
+    "caminio-fixtures": "git://github.com/caminio/caminio-fixtures#master"
   },
   "main": "index.js",
   "license": "MIT"

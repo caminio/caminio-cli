@@ -4,10 +4,10 @@
   "version": "0.0.1",
   "private": true,
   "dependencies": {
-    "caminio": "~1.99.1",
-    "caminio-auth": "~0.0.1",
-    "caminio-ui": "~0.0.1",
-    "caminio-rocksol": "~0.0.1",
+    "caminio": "~1.1.0",
+    "caminio-auth": "git://github.com/caminio/caminio-auth#master",
+    "caminio-ui": "git://github.com/caminio/caminio-ui#master",
+    "caminio-rocksol": "git://github.com/caminio/caminio-rocksol#master",
     "grunt": "~0.4.2",
     "connect-mongo": "~0.4.0",
     "jade": "~1.1.5"
@@ -19,6 +19,7 @@
   "license": "MIT",
   "devDependencies": {
     "grunt": "~0.4.2",
+    "caminio-fixtures": "git://github.com/caminio/caminio-fixtures#master",
     "grunt-contrib-watch": "~0.5.3",
     "grunt-contrib-copy": "~0.5.0",
     "grunt-contrib-clean": "~0.5.0",
