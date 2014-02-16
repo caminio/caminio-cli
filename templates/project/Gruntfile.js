@@ -1,5 +1,6 @@
 var fs        = require('fs')
-  , join      = require('path').join;
+  , join      = require('path').join
+  , async     = require('async');
 
 module.exports = function(grunt) {
 
@@ -76,7 +77,7 @@ module.exports = function(grunt) {
           }
         ]
       },
-      gearBuildDir: {
+      gear: {
         files: [
           {
             expand: true,
@@ -99,23 +100,33 @@ module.exports = function(grunt) {
   grunt.registerMultiTask('gears', 'itereate through node_modules/caminio-* gears and perform task', function(){
 
     var task = this;
+    // copy task
+    if( task.target === 'copy' ){
+      var copyDirs = [];
+      regGears.forEach( function(mod){
 
-    regGears.forEach( function( mod ){
-
-      if( !grunt.file.exists( join('node_modules',mod,'assets') ) )
-        return;
-
-      if( task.target === 'copy' ){
-        grunt.config('copy.gearBuildDir.files', [{
+        if( !grunt.file.exists( join('node_modules',mod,'assets') ) )
+          return;
+        copyDirs.push({
           expand: true,
           cwd: join('node_modules/',mod,'/build/'),
           src: ['**/*'],
           dest: 'public'
-        }]);
-        return grunt.task.run('copy:gearBuildDir');
-      }
+        })
+      });
 
-      var done = task.async();
+      grunt.config('copy.gear.files', copyDirs);
+      grunt.task.run('copy:gear');
+
+      return;
+    }
+
+    var done = task.async();
+    async.each(regGears, function( mod, next ){
+
+      if( !grunt.file.exists( join('node_modules',mod,'assets') ) )
+        return next();
+
       grunt.util.spawn({
         grunt: true,
         args: [ task.target ],
@@ -124,20 +135,28 @@ module.exports = function(grunt) {
             cwd: 'node_modules/'+mod
         }
       }, function (err, result, code) {
+
         if( err ){ 
           grunt.log.error(result);
           grunt.log.error(err); 
         }
         else
           grunt.log.ok(mod);
-        done();
+        next();
       });
 
+    }, function(){
+      console.log('ready');
+      done();
     });
 
   });
 
-  grunt.registerTask('server', ['concurrent']);
+  grunt.registerTask('server', function(){
+    if( process.env.NODE_ENV === 'production' )
+      return grunt.task.run('nodemon');
+    grunt.task.run('concurrent');
+  });
 
   grunt.loadNpmTasks('grunt-concurrent');
   grunt.loadNpmTasks('grunt-nodemon');

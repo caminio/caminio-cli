@@ -1,29 +1,29 @@
-var _         = require('lodash');
-var async     = require('async');
+var fs = require('fs');
 
-// the whole setup is inspired by:
-// https://github.com/RainerAtSpirit/HTMLStarterKitPro/blob/master/Gruntfile.js
-//
 module.exports = function(grunt) {
 
   /*jshint scripturl:true*/
 
+  var gearName = 'MODNAME';
+
   var requireConfig = {
-    baseUrl: 'assets/javascripts/MODNAME/app/',
+    baseUrl: 'assets/javascripts/'+gearName+'/app/',
     paths: {
       'jquery': '../components/jquery/jquery.min',
       'knockout': '../components/knockout.js/knockout-2.3.0.debug',
+      'knockout.validation': '../components/knockout.validation/Dist/knockout.validation',
       'text': '../components/requirejs-text/text',
       'durandal': '../components/durandal/js',
       'plugins': '../components/durandal/js/plugins',
       'transitions': '../components/durandal/js/transitions',
-      'bootstrap': '../components/bootstrap/dist/js',
+      'bootstrap': '../components/bootstrap/dist/js/bootstrap',
       'i18next': '../components/i18next/release/i18next.amd-1.7.1.min',
       'inflection': '../components/inflection/lib/inflection',
+      'ace': '../components/ace/lib/ace/ace',
       //'select2': '../components/select2/select2',
       'moment': '../components/moment/moment',
-      'caminio': '../../caminio',
-      'ds': '../../caminio-ds',
+      'caminio': '../components/caminio',
+      'ds': '../components/caminio-ds',
       'models': 'models',
       'adapters': 'adapters',
       'almond': '../components/durandal-almond/almond'
@@ -35,36 +35,52 @@ module.exports = function(grunt) {
 
     pkg: grunt.file.readJSON('package.json'),
 
+    gearName: gearName,
+
     clean: {
       build: ['build']
     },
 
-    cssmin: {
-      add_banner: {
+    mochaTest: {
+      test: {
         options: {
-          banner: '/* camin.io */'
+          globals: ['should'],
+          timeout: 3000,
+          bail: true,
+          ignoreLeaks: false,
+          ui: 'bdd',
+          reporter: 'spec'
         },
-      },
-      combine: {
-        files: {
-          'build/stylesheets/MODNAME.min.css': [ 'assets/stylesheets/MODNAME-static/*.css', 
-                                                  'assets/stylesheets/MODNAME/*.css' ]
+        src: ['test/**/*.test.js']
+      }
+    }, 
+
+    yuidoc: {
+      compile: {
+        name: '<%= pkg.name %>',
+        description: '<%= pkg.description %>',
+        //version: '<%= pkg.version %>',
+        //url: '<%= pkg.homepage %>',
+        options: {
+          exclude: 'test,node_modules,public/javascripts/vendor',
+          paths:  '.',
+          outdir: './doc'
         }
       }
     },
-    
+
     durandal: {
       main: {
-        src: [ 'assets/javascripts/MODNAME/app/**/*.*', 
-               'assets/javascripts/MODNAME/components/durandal/**/*.js' ],
+        src: [ 'assets/javascripts/<%= gearName %>/app/**/*.*', 
+               'assets/javascripts/<%= gearName %>/components/durandal/**/*.js' ],
         options: {
           name: '../components/durandal-almond/almond',
           baseUrl: requireConfig.baseUrl,
-          mainPath: 'assets/javascripts/MODNAME/app/main',
+          mainPath: 'assets/javascripts/<%= gearName %>/app/main',
           paths: requireConfig.paths,
           exclude: [],
           optimize: 'none',
-          out: 'build/javascripts/MODNAME/app/main.js'
+          out: 'build/javascripts/'+gearName+'.js'
         }
       }
     },
@@ -78,8 +94,8 @@ module.exports = function(grunt) {
             '*/\n'
       },
       build: {
-        src: 'build/javascripts/MODNAME/app/main.js',
-        dest: 'build/javascripts/MODNAME/app/main.min.js'
+        src: 'build/javascripts/'+gearName+'.js',
+        dest: 'build/javascripts/'+gearName+'.min.js'
       }
     },
 
@@ -93,25 +109,25 @@ module.exports = function(grunt) {
             dest: 'build/images/'
           }
         ]
-      },
-      fonts: {
-        files: [
-          { 
-            expand: true,
-            cwd: 'assets/fonts/',
-            src: ['**/*'], 
-            dest: 'build/fonts/'
-          }
-        ]
       }
     },
 
-    mocha_phantomjs: {
-      all: ['test/browser/unit/**/*.html']
+    cssmin: {
+      add_banner: {
+        options: {
+          banner: '/* camin.io */'
+        },
+      },
+      combine: {
+        files: {
+          'build/stylesheets/<%= gearName %>.min.css': [ 'assets/stylesheets/<%= gearName %>-static/*.css', 
+                                                    'assets/stylesheets/<%= gearName %>/*.css' ],
+          'build/stylesheets/caminio-auth.min.css': [ 'assets/stylesheets/<%= gearName %>/authorization.css' ]
+        }
+      }
     },
-
     jshint: {
-      all: ['Gruntfile.js', 'api/**/*.js', 'config/**/*.js', 'assets/javascripts/MODNAME/app'],
+      all: ['Gruntfile.js', 'api/**/*.js', 'config/**/*.js', 'assets/javascripts/<%= gearName %>/app'],
       options: {
         "laxcomma": true
       }
@@ -119,63 +135,60 @@ module.exports = function(grunt) {
 
   });
 
-  grunt.loadNpmTasks('grunt-contrib-jshint');
-  grunt.loadNpmTasks('grunt-contrib-clean');
-  grunt.loadNpmTasks('grunt-contrib-cssmin');
-  grunt.loadNpmTasks('grunt-contrib-copy');
-  grunt.loadNpmTasks('grunt-contrib-uglify');
-  grunt.loadNpmTasks('grunt-durandal');
+  // Load the plugin that provides the "uglify" task.
+  //grunt.loadNpmTasks('grunt-contrib-uglify');
+  grunt.loadNpmTasks('grunt-mocha-test');
 
-  // tests
-  grunt.loadNpmTasks('grunt-mocha-phantomjs');
-  
+  grunt.registerTask('test', 'runs all tests', function(){
+    grunt.task.run('clearLogs');
+    grunt.config('mochaTest.test.src', ['test/**/*.test.js']);
+    grunt.task.run('mochaTest');
+  });
+
+  grunt.registerTask('testUnit', 'runs only unit tests', function(){
+    grunt.task.run('clearLogs');
+    grunt.config('mochaTest.test.src', ['test/**/*.unit.test.js']);
+    grunt.task.run('mochaTest');
+  });
+
+  grunt.registerTask('testModels', 'runs only model tests', function(){
+    grunt.task.run('clearLogs');
+    grunt.config('mochaTest.test.src', ['test/**/*model.unit.test.js']);
+    grunt.task.run('mochaTest');
+  });
+
+  grunt.registerTask('testApi', 'runs only api tests', function(){
+    grunt.task.run('clearLogs');
+    grunt.config('mochaTest.test.src', ['test/**/*.api.*.test.js']);
+    grunt.task.run('mochaTest');
+  });
+
+  grunt.registerTask('clearLogs', function(){
+    if( fs.existsSync('test.log') )
+      fs.unlinkSync('test.log');
+  });
+
   grunt.registerTask('build', [
     'jshint',
     'clean',
     'cssmin',
     'copy:img',
-    'copy:fonts',
     'durandal',
     'uglify'
   ]);
 
-  grunt.registerTask('startServer', function(){
-    process.env.NODE_ENV = 'test';
-    
-    var done = this.async();    
-    
-    var caminio = require('caminio');
-    var Gear = require('caminio/gear');
-    require('caminio-auth'); // require this gear
-    require('./'); // require this gear
-    new Gear({ api: true, absolutePath: __dirname+'/test/support/app' });
+  grunt.registerTask('docs', 'yuidoc');
+  grunt.loadNpmTasks('grunt-contrib-yuidoc');
+  grunt.loadNpmTasks('grunt-contrib-cssmin');
+  grunt.loadNpmTasks('grunt-contrib-copy');
+  grunt.loadNpmTasks('grunt-contrib-uglify');
+  
+  grunt.loadNpmTasks('grunt-contrib-jshint');
+  grunt.loadNpmTasks('grunt-contrib-clean');
+  grunt.loadNpmTasks('grunt-durandal');
 
-    caminio.init({ 
-      config: { 
-        root: __dirname+'/test/support/app',
-        log: {
-          filename: process.cwd()+'/test.log'
-        }
-      }
-    });
 
-    // clean up database;
-    caminio.on('ready', function(){
-      async.each( Object.keys(caminio.models), function(modelName, next){
-        caminio.models[modelName].remove({}, function(err){
-          if( err ) console.log(err);
-          next();
-        });
-      }, done );
-    });
-
-  });
-
-  grunt.registerTask('default', ['build']);
-  grunt.registerTask('test', [
-    'jshint',
-    'startServer',
-    'mocha_phantomjs'
-    ]);
+  // Default task(s).
+  grunt.registerTask('default', ['test']);
 
 };
