@@ -5,30 +5,11 @@ module.exports = function(grunt) {
   /*jshint scripturl:true*/
 
   var gearName = 'MODNAME';
-
-  var requireConfig = {
-    baseUrl: 'assets/javascripts/'+gearName+'/app/',
-    paths: {
-      'jquery': '../components/jquery/jquery.min',
-      'knockout': '../components/knockout.js/knockout-2.3.0.debug',
-      'knockout.validation': '../components/knockout.validation/Dist/knockout.validation',
-      'text': '../components/requirejs-text/text',
-      'durandal': '../components/durandal/js',
-      'plugins': '../components/durandal/js/plugins',
-      'transitions': '../components/durandal/js/transitions',
-      'bootstrap': '../components/bootstrap/dist/js/bootstrap',
-      'i18next': '../components/i18next/release/i18next.amd-1.7.1.min',
-      'inflection': '../components/inflection/lib/inflection',
-      'ace': '../components/ace/lib/ace/ace',
-      //'select2': '../components/select2/select2',
-      'moment': '../components/moment/moment',
-      'caminio': '../components/caminio',
-      'ds': '../components/caminio-ds',
-      'models': 'models',
-      'adapters': 'adapters',
-      'almond': '../components/durandal-almond/almond'
-    }
-  };
+  
+  var uglifyFiles = {};
+  uglifyFiles['build/javascripts/'+gearName+'.min.js'] = [
+    'assets/javascripts/'+gearName+'/**/*.js'
+  ];
 
   // Project configuration.
   grunt.initConfig({
@@ -69,33 +50,16 @@ module.exports = function(grunt) {
       }
     },
 
-    durandal: {
-      main: {
-        src: [ 'assets/javascripts/<%= gearName %>/app/**/*.*', 
-               'assets/javascripts/<%= gearName %>/components/durandal/**/*.js' ],
-        options: {
-          name: '../components/durandal-almond/almond',
-          baseUrl: requireConfig.baseUrl,
-          mainPath: 'assets/javascripts/<%= gearName %>/app/main',
-          paths: requireConfig.paths,
-          exclude: [],
-          optimize: 'none',
-          out: 'build/javascripts/'+gearName+'.js'
-        }
-      }
-    },
-
     uglify: {
       options: {
         banner: '/*! <%= pkg.name %> <%= grunt.template.today("yyyy-mm-dd") %> \n' +
-            '* Copyright (c) <%= grunt.template.today("yyyy") %> TASTENWERK \n' +
+            '* Copyright (c) <%= grunt.template.today("yyyy") %> <YOUR COMPANY HERE> \n' +
             '* Available via the MIT license.\n' +
             '* see: http://opensource.org/licenses/MIT for blueprint.\n' +
             '*/\n'
       },
       build: {
-        src: 'build/javascripts/'+gearName+'.js',
-        dest: 'build/javascripts/'+gearName+'.min.js'
+        files: uglifyFiles
       }
     },
 
@@ -173,7 +137,6 @@ module.exports = function(grunt) {
     'clean',
     'cssmin',
     'copy:img',
-    'durandal',
     'uglify'
   ]);
 
@@ -185,7 +148,6 @@ module.exports = function(grunt) {
   
   grunt.loadNpmTasks('grunt-contrib-jshint');
   grunt.loadNpmTasks('grunt-contrib-clean');
-  grunt.loadNpmTasks('grunt-durandal');
 
 
   // Default task(s).
