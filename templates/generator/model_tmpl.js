@@ -14,7 +14,7 @@ module.exports = function __NAME__( caminio, mongoose ){
      * @property name
      * @type String
      */  
-    name: String,
+    name: { type: String, public: true },
 
     /**
      * @property created.at
@@ -25,10 +25,8 @@ module.exports = function __NAME__( caminio, mongoose ){
      * @property created.by
      * @type ObjectId
      */
-    created: { 
-      at: { type: Date, default: Date.now },
-      by: { type: ObjectId, ref: 'User' }
-    },
+    createdAt: { type: Date, default: Date.now, public: true },
+    createdBy: { type: ObjectId, ref: 'User', public: true },
 
     /**
      * @property updated.at
@@ -39,16 +37,10 @@ module.exports = function __NAME__( caminio, mongoose ){
      * @property updated.by
      * @type ObjectId
      */
-    updated: { 
-      at: { type: Date, default: Date.now },
-      by: { type: ObjectId, ref: 'User' }
-    }
+    updatedAt: { type: Date, default: Date.now, public: true },
+    updatedBy: { type: ObjectId, ref: 'User', public: true }
 
   });
-
-  // these attributes will be
-  // visible in toJSON and toObject calls
-  schema.publicAttributes = ['name','updated','created'];
 
   return schema;
 
