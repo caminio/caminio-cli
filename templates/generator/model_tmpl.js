@@ -17,27 +17,33 @@ module.exports = function __NAME__( caminio, mongoose ){
     name: { type: String, public: true },
 
     /**
-     * @property created.at
-     * @type Date
-     */
-
-    /**
-     * @property created.by
+     * @property camDomain
      * @type ObjectId
      */
+    camDomain: { type: ObjectId, ref: 'Domain' },
+    
+    /**
+     * @property createdAt
+     * @type Date
+     */
     createdAt: { type: Date, default: Date.now, public: true },
+
+    /**
+     * @property createdBy
+     * @type ObjectId
+     */
     createdBy: { type: ObjectId, ref: 'User', public: true },
 
     /**
-     * @property updated.at
+     * @property updatedAt
      * @type Date
      */
+    updatedAt: { type: Date, default: Date.now, public: true },
 
     /**
-     * @property updated.by
+     * @property updatedBy
      * @type ObjectId
      */
-    updatedAt: { type: Date, default: Date.now, public: true },
     updatedBy: { type: ObjectId, ref: 'User', public: true }
 
   });

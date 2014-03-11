@@ -10,7 +10,8 @@
     "grunt": "~0.4.2"
   },
   "devDependencies": {
-    "caminio-fixtures": "git://github.com/caminio/caminio-fixtures#master"
+    "caminio-fixtures": "git://github.com/caminio/caminio-fixtures#master",
+    "grunt-mocha-test": "~0.9.4"
   },
   "main": "index.js",
   "license": "MIT"
