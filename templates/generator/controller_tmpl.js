@@ -27,6 +27,6 @@ module.exports = function __NAME__( caminio, policies, middleware ){
       }
     ]
 
-  }
+  };
 
-}
+};

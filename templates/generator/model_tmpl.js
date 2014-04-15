@@ -50,4 +50,4 @@ module.exports = function __NAME__( caminio, mongoose ){
 
   return schema;
 
-}
+};
