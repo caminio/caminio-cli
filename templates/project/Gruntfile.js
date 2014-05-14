@@ -4,6 +4,8 @@ var fs        = require('fs')
 
 module.exports = function(grunt) {
 
+  var APP_NAME = 'camin_io';
+
   var pkgFile = grunt.file.readJSON('package.json')
     , regGears = []
     , watchWatch = []
@@ -93,9 +95,55 @@ module.exports = function(grunt) {
       jshint: 1,
       build: 1,
       copy: 1
-    }
+    },
+
+      shipit: {
+        options: {
+          workspace: '/tmp/deploy/'+APP_NAME,
+          deployTo: '/srv/apps/'+APP_NAME,
+          repositoryUrl: 'git@git.tastenwerk.com:clients/camin_io.git',
+          ignores: ['.git','node_modules'],
+          keepReleases: 5
+        },
+        staging: {
+          servers: 'tastenbox01.tastenwerk.com'
+        }
+      }
 
   });
+
+  grunt.loadNpmTasks('grunt-shipit');
+
+  grunt.registerTask('local:copyBuild', function () {
+    grunt.shipit.local('cp -r public '+grunt.shipit.config.workspace+'/', this.async() );
+  });
+
+  grunt.registerTask('remote:install', function () {
+    grunt.shipit.remote('cd '+grunt.shipit.releasePath+' && npm --production i', this.async() );
+  });
+
+  grunt.registerTask('remote:restart', function () {
+    grunt.shipit.remote('sudo service app-caminio restart', this.async() );
+  });
+
+  grunt.registerTask('remote:link', function () {
+    grunt.shipit.remote('cd '+grunt.shipit.releasePath+' && ln -s '+grunt.shipit.config.deployTo+'/shared/log '+grunt.shipit.releasePath+'/log', this.async() );
+  });
+
+  grunt.shipit.on('updated', function () {
+    grunt.task.run(['remote:install', 'remote:link']);
+  });
+
+  grunt.shipit.on('published', function(){
+    grunt.task.run(['remote:restart']);
+  });
+
+  grunt.shipit.on('fetched', function () {
+    grunt.task.run(['build', 'local:copyBuild']);
+  });
+
+  grunt.registerTask('publish', ['shipit:staging','deploy']);
+  grunt.registerTask('restart', ['shipit:staging','remote:restart']);
 
   grunt.registerMultiTask('gears', 'itereate through node_modules/caminio-* gears and perform task', function(){
 
@@ -155,7 +203,8 @@ module.exports = function(grunt) {
   grunt.registerTask('server', function(){
     if( process.env.NODE_ENV === 'production' )
       return grunt.task.run('nodemon');
-    grunt.task.run('concurrent');
+    //grunt.task.run('concurrent');
+    grunt.task.run('nodemon');
   });
 
   grunt.loadNpmTasks('grunt-concurrent');
